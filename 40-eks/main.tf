@@ -1,6 +1,6 @@
 resource "aws_key_pair" "eks" {
   key_name   = "expense-eks"
-  public_key = file("~/.ssh/eks-1.pub")
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZvWdYhK/HbfTXQAHIxiAsBnzdEKN49HXg7jj7jsZk0oFX6Dh6dbiXOjXdMpvVQrSzxyEFZPEt4kdyYxvLng2tzqo7D/pGqveRSpNemw60fdBxNAIWymZ6Xnp4rc6vKdSVbH8M0sGTqoKdmYNcdCAoLIGrp6P+Tzu4+b47fQpdfqw8IeW8iXCc98z37KWhHT11XgsaacR2bF2txVlKbIjsRn0IJhe+VPx0xCDAH0kuSSnFS+NOagqPRtmjbEXisEJPhYBb00L8qwMjZszP26sB2GaubnVM/s4Jg00XCbu8tPYJAF3Lt+U+oLSHBvU3Mn+TTZYv/D9JOnOb7VCfo5LAysK9RrYAZjUXzhhRCFT5qzCtjC5cWcXPwA7fRJnoFzbAd3xlkRNWSL71pOvLMPOTAPowrEfPaoc/X3bGCn7AShxwp5JNJxZkbQB51uyFJxIsElJvVBlwSJNJJQ+y9TZG3bC1J01UIFS4luk+/XRHhxAC1OzvMHWWlHN9opZ5Tlc= DELL@sadaiah"
 }
 
 module "eks" {
