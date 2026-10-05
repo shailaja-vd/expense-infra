@@ -24,11 +24,13 @@ pipeline {
                         terraform plan
                     """
                 }
-                 
                }
             }
         }
         stage('Apply') {
+            when { 
+                expression { params.ACTION == 'apply'}
+            }
             steps {
                script{
                 withAWS(region: 'us-east-1', credentials: 'aws-creds') {
@@ -37,22 +39,35 @@ pipeline {
                         terraform apply -auto-approve
                     """
                 }
-                 
                }
             }
         }
-        
+        stage('Destroy') {
+            when { 
+                expression { params.ACTION == 'destroy'}
+            }
+            steps {
+               script{
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                    sh """
+                        cd 20-bastion
+                        terraform destroy -auto-approve
+                    """
+                }
+               }
+            }
+        }
     }
-    post { 
-        always { 
-            echo 'I will always say Hello again!'
-            deleteDir()
-        }
-        failure { 
-            echo 'I will run when pipeline is failed'
-        }
-        success { 
-            echo 'I will run when pipeline is success'
-        }
+    post post { 
+    always { 
+        echo 'I will always say Hello again!'
+        deleteDir()
     }
+    failure { 
+        echo 'I will run when pipeline is failed'
+    }
+    success { 
+        echo 'I will run when pipeline is success'
+    }
+}
 }
