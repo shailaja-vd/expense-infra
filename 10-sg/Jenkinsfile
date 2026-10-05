@@ -52,21 +52,22 @@ pipeline {
             parallel {
                 stage('20-bastion') {    
                     steps {
-                        build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')],  waite: false
+                        build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
                     }
                 }
                 stage('30-rds') {
                     steps {
-                        build job: '30-rds', parameters: [string(name: 'ACTION', value: 'apply')],  waite: false
+                        build job: '30-rds', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
                     }
                 }
                 stage('40-eks') {
                     steps {
-                        build job: '40-eks', parameters: [string(name: 'ACTION', value: 'apply')],  waite: false
+                        build job: '40-eks', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
+                    }
                 }
                 stage('50-ecr') {
                     steps {
-                        build job: '50-ecr', parameters: [string(name: 'ACTION', value: 'apply')], waite: false
+                        build job: '50-ecr', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
                     }
                 }
             }
@@ -85,5 +86,4 @@ pipeline {
             echo 'I will run when pipeline is success'
         }
     }
-}
 }
