@@ -29,16 +29,33 @@ pipeline {
             }
         }
         stage('Apply') {
+            when {
+                expression { params.ACTION == 'Apply' }
+            }
             steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 40-eks
-                        terraform apply -auto-approve
-                    """
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            cd 40-eks
+                            terraform apply -auto-approve
+                        """
+                    }
                 }
-                 
-               }
+            }
+        }
+        stage('Destroy') {
+            when {
+                expression { params.ACTION == 'destroy' }
+            }
+            steps {
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            cd 40-eks
+                            terraform destroy -auto-approve
+                        """
+                    }
+                }
             }
         }
         
