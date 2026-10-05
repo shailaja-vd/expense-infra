@@ -1,8 +1,8 @@
 pipeline {
     agent { label 'AGENT-1' }
-    environment { 
+    environment {
         PROJECT = 'EXPENSE'
-        COMPONENT = 'BACKEND' 
+        COMPONENT = 'BACKEND'
         DEPLOY_TO = "production"
     }
     options {
@@ -10,47 +10,48 @@ pipeline {
         timeout(time: 30, unit: 'MINUTES')
         ansiColor('xterm')
     }
-    parameters{
+    parameters {
         choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Pick something')
-    } 
+    }
     stages {
         stage('Init') {
             steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 10-sg
-                        terraform init -reconfigure
-                        terraform plan
-                    """
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            cd 10-sg
+                            terraform init -reconfigure
+                        """
+                    }
                 }
-                 
-               }
             }
         }
-        stage('Apply') {
-            /* input {
-                message "Should we continue?"
-                ok "Yes, we should."
-            } */
+        stage('Apply or Destroy') {
             steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 10-sg
-                        terraform apply -auto-approve
-                    """
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        if (params.ACTION == 'apply') {
+                            sh """
+                                cd 10-sg
+                                terraform plan
+                                terraform apply -auto-approve
+                            """
+                        } else {
+                            sh """
+                                cd 10-sg
+                                terraform destroy -auto-approve
+                            """
+                        }
+                    }
                 }
-                 
-               }
             }
         }
         stage('Parallel Stages') {
-            when { 
-                expression { params.ACTION == 'apply'}
+            when {
+                expression { params.ACTION == 'apply' }
             }
             parallel {
-                stage('20-bastion') {    
+                stage('20-bastion') {
                     steps {
                         build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
                     }
@@ -72,32 +73,16 @@ pipeline {
                 }
             }
         }
-        /* stage('Sequential') {
-            stages {
-                stage('In Sequential 1') {
-                    steps {
-                        echo "In Sequential 1"
-                    }
-                }
-                stage('In Sequential 2') {
-                    steps {
-                        echo "In Sequential 2"
-                    }
-                }
-            }
-        } */
-
-        
     }
-    post { 
-        always { 
+    post {
+        always {
             echo 'I will always say Hello again!'
             deleteDir()
         }
-        failure { 
+        failure {
             echo 'I will run when pipeline is failed'
         }
-        success { 
+        success {
             echo 'I will run when pipeline is success'
         }
     }
