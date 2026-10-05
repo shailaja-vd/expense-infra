@@ -1,8 +1,8 @@
 pipeline {
     agent { label 'AGENT-1' }
-    environment { 
+    environment {
         PROJECT = 'EXPENSE'
-        COMPONENT = 'BACKEND' 
+        COMPONENT = 'BACKEND'
         DEPLOY_TO = "production"
     }
     options {
@@ -10,48 +10,63 @@ pipeline {
         timeout(time: 30, unit: 'MINUTES')
         ansiColor('xterm')
     }
-    parameters{
+    parameters {
         choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Pick something')
-    } 
+    }
     stages {
         stage('Init') {
             steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 50-ecr
-                        terraform init -reconfigure
-                        terraform plan
-                    """
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            cd 50-ecr
+                            terraform init -reconfigure
+                            terraform plan
+                        """
+                    }
                 }
-                 
-               }
             }
         }
         stage('Apply') {
+            when {
+                expression { params.ACTION == 'apply' }
+            }
             steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 50-ecr
-                        terraform apply -auto-approve
-                    """
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            cd 50-ecr
+                            terraform apply -auto-approve
+                        """
+                    }
                 }
-                 
-               }
             }
         }
-        
+        stage('Destroy') {
+            when {
+                expression { params.ACTION == 'destroy' }
+            }
+            steps {
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            cd 50-ecr
+                            terraform destroy -auto-approve
+                        """
+                    }
+                }
+            }
+        }
     }
-    post { 
-        always { 
+    post {
+        always {
             echo 'I will always say Hello again!'
             deleteDir()
         }
-        failure { 
+        failure {
             echo 'I will run when pipeline is failed'
         }
-        success { 
+        success {
             echo 'I will run when pipeline is success'
         }
     }
