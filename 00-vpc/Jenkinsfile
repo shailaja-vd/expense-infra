@@ -1,8 +1,8 @@
 pipeline {
     agent { label 'AGENT-1' }
-    environment {
+    environment { 
         PROJECT = 'EXPENSE'
-        COMPONENT = 'BACKEND'
+        COMPONENT = 'BACKEND' 
         DEPLOY_TO = "production"
     }
     options {
@@ -10,52 +10,59 @@ pipeline {
         timeout(time: 30, unit: 'MINUTES')
         ansiColor('xterm')
     }
-    parameters {
+    parameters{
         choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Pick something')
     }
     stages {
         stage('Init') {
             steps {
-                script {
-                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                        sh """
-                            cd 00-vpc
-                            terraform init -reconfigure
-                        """
-                    }
+               script{
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                    sh """
+                        cd 00-vpc
+                        terraform init -reconfigure
+                        terraform plan
+                    """
                 }
+                 
+               }
             }
         }
-        stage('Apply or Destroy') {
+        stage('Apply') {
+            input {
+                message "Should we continue?"
+                ok "Yes, we should."
+            }
             steps {
-                script {
-                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                        if (params.ACTION == 'apply') {
-                            sh """
-                                cd 00-vpc
-                                terraform plan
-                                terraform apply -auto-approve
-                            """
-                        } else {
-                            sh """
-                                cd 00-vpc
-                                terraform destroy -auto-approve
-                            """
-                        }
-                    }
+               script{
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                    sh """
+                        cd 00-vpc
+                        terraform apply -auto-approve
+                    """
                 }
+                 
+               }
+            }
+        }
+        stage('Trigger SG'){
+            when { 
+                expression { params.ACTION == 'apply'}
+            }
+            steps{
+                build job: '10-sg', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
             }
         }
     }
-    post {
-        always {
+    post { 
+        always { 
             echo 'I will always say Hello again!'
             deleteDir()
         }
-        failure {
+        failure { 
             echo 'I will run when pipeline is failed'
         }
-        success {
+        success { 
             echo 'I will run when pipeline is success'
         }
     }
