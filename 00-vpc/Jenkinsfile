@@ -45,7 +45,7 @@ pipeline {
                }
             }
         }
-        stage('Destroy') {
+        /* stage('Destroy') {
             input {
                 message "Should we continue?"
                 ok "Yes, we should."
@@ -61,7 +61,7 @@ pipeline {
                  
                }
             }
-        }
+        } */
         stage('Trigger SG'){
             when { 
                 expression { params.ACTION == 'apply', 'destroy'}

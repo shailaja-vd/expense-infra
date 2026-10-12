@@ -44,26 +44,11 @@ pipeline {
                  
                }
             }
-        }stage('Destroy') {
-            /* input {
-                message "Should we continue?"
-                ok "Yes, we should."
-            } */
-            steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 10-sg
-                        terraform destroy -auto-approve
-                    """
-                }
-                 
-               }
-            }
         }
+        
         stage('Parallel Stages') {
             when { 
-                expression { params.ACTION == 'apply','destroy'}
+                expression { params.ACTION == 'apply', 'destroy'}
             }
             parallel {
                 stage('20-bastion') {    
@@ -73,17 +58,17 @@ pipeline {
                 }
                 stage('30-rds') {
                     steps {
-                        build job: '30-rds', parameters: [string(name: 'ACTION', value: 'apply','destroy')], wait: false
+                        build job: '30-rds', parameters: [string(name: 'ACTION', value: 'apply', 'destroy')], wait: false
                     }
                 }
                 stage('40-eks') {
                     steps {
-                        build job: '40-eks', parameters: [string(name: 'ACTION', value: 'apply','destroy')], wait: false
+                        build job: '40-eks', parameters: [string(name: 'ACTION', value: 'apply', 'destroy')], wait: false
                     }
                 }
                 stage('50-ecr') {
                     steps {
-                        build job: '50-ecr', parameters: [string(name: 'ACTION', value: 'apply','destroy')], wait: false
+                        build job: '50-ecr', parameters: [string(name: 'ACTION', value: 'apply', 'destroy')], wait: false
                     }
                 }
             }
