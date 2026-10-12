@@ -45,7 +45,6 @@ pipeline {
                }
             }
         }
-        
         stage('Parallel Stages') {
             when { 
                 expression { params.ACTION == 'apply'}
@@ -53,7 +52,7 @@ pipeline {
             parallel {
                 stage('20-bastion') {    
                     steps {
-                        build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
+                        build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
                 stage('30-rds') {
@@ -72,7 +71,7 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         /* stage('Sequential') {
             stages {
                 stage('In Sequential 1') {
@@ -86,7 +85,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
 
         
     }
