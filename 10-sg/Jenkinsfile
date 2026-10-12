@@ -63,7 +63,7 @@ pipeline {
             }
         }
         
-        stage('Parallel Stages') {
+        /* stage('Parallel Stages') {
             when { 
                 expression { params.ACTION == 'destroy'}
             }
@@ -89,7 +89,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
         /* stage('Sequential') {
             stages {
                 stage('In Sequential 1') {
