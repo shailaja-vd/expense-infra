@@ -45,7 +45,7 @@ pipeline {
                }
             }
         }
-        /* stage('Destroy') {
+        stage('Destroy') {
             input {
                 message "Should we continue?"
                 ok "Yes, we should."
@@ -61,15 +61,15 @@ pipeline {
                  
                }
             }
-        } */
-        stage('Trigger SG'){
+        }
+        /* stage('Trigger SG'){
             when { 
                 expression { params.ACTION == 'apply', 'destroy'}
             }
             steps{
                 build job: '10-sg', parameters: [string(name: 'ACTION', value: 'apply', 'destroy')], propagate: true
             }
-        }
+        } */
     }
     post { 
         always { 
