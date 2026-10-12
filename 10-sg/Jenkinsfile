@@ -48,7 +48,7 @@ pipeline {
         
         stage('Parallel Stages') {
             when { 
-                expression { params.ACTION == 'apply' , 'destroy'}
+                expression { params.ACTION == 'apply','destroy'}
             }
             parallel {
                 stage('20-bastion') {    
