@@ -48,10 +48,10 @@ pipeline {
         
         stage('Trigger SG'){
             when { 
-                expression { params.ACTION == 'apply', 'destroy'}
+                expression { params.ACTION == 'apply'}
             }
             steps{
-                build job: '10-sg', parameters: [string(name: 'ACTION', value: 'apply', 'destroy')], propagate: true
+                build job: '10-sg', parameters: [string (name: 'ACTION', value: 'apply') ], propagate: true
             }
         }
     }
