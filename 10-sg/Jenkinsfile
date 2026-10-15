@@ -52,7 +52,7 @@ pipeline {
             parallel {
                 stage('20-bastion') {    
                     steps {
-                        build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
+                        build job: '20-bastion', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
                 stage('30-rds') {
