@@ -72,22 +72,20 @@ pipeline {
                 }
             }
         }
-        /* stage('Sequential') {
+        stage('Sequential') {
             stages {
-                stage('In Sequential 1') {
+                stage('60-acm') {
                     steps {
-                        echo "In Sequential 1"
+                        build job: '60-acm', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
-                stage('In Sequential 2') {
+                stage('70-ingress-alb') {
                     steps {
-                        echo "In Sequential 2"
+                        build job: '70-ingress-alb', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
             }
-        } */
-
-        
+        }
     }
     post { 
         always { 
