@@ -57,21 +57,36 @@ pipeline {
                 }
                 stage('30-rds') {
                     steps {
-                        build job: '30-rds', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
+                        build job: '30-rds', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
                 stage('40-eks') {
                     steps {
-                        build job: '40-eks', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
+                        build job: '40-eks', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
                 stage('50-ecr') {
                     steps {
-                        build job: '50-ecr', parameters: [string(name: 'ACTION', value: 'apply')], propagate: true
+                        build job: '50-ecr', parameters: [string(name: 'ACTION', value: 'apply')], wait: false
                     }
                 }
             }
         }
+        /* stage('Sequential') {
+            stages {
+                stage('In Sequential 1') {
+                    steps {
+                        echo "In Sequential 1"
+                    }
+                }
+                stage('In Sequential 2') {
+                    steps {
+                        echo "In Sequential 2"
+                    }
+                }
+            }
+        } */
+
         
     }
     post { 
