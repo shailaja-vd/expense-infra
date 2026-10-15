@@ -10,9 +10,13 @@ pipeline {
         timeout(time: 30, unit: 'MINUTES')
         ansiColor('xterm')
     }
-    parameters{
-        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Pick something')
-    }
+    /* parameters{
+        string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+        text(name: 'BIOGRAPHY', defaultValue: '', description: 'Enter some information about the person')
+        booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
+        choice(name: 'CHOICE', choices: ['One', 'Two', 'Three'], description: 'Pick something')
+        password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
+    } */
     stages {
         stage('Init') {
             steps {
@@ -29,10 +33,10 @@ pipeline {
             }
         }
         stage('Apply') {
-            /* input {
+            input {
                 message "Should we continue?"
                 ok "Yes, we should."
-            } */
+            }
             steps {
                script{
                 withAWS(region: 'us-east-1', credentials: 'aws-creds') {
@@ -43,32 +47,6 @@ pipeline {
                 }
                  
                }
-            }
-        }
-        stage('Destroy') {
-            /* input {
-                message "Should we continue?"
-                ok "Yes, we should."
-            } */
-            steps {
-               script{
-                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
-                    sh """
-                        cd 00-vpc
-                        terraform destroy -auto-approve
-                    """
-                }
-                 
-               }
-            }
-        }
-        
-        stage('Trigger SG'){
-            when { 
-                expression { params.ACTION == 'apply'}
-            }
-            steps{
-                build job: '10-sg', parameters: [string (name: 'ACTION', value: 'apply') ], propagate: true
             }
         }
     }
