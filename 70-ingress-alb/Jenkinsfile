@@ -23,6 +23,22 @@ pipeline {
                 }
             }
         }
+        stage('Restore cert parameter') {
+            steps {
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            aws ssm put-parameter \
+                              --name /expense/dev/ingress_alb_certificate_arn \
+                              --type String \
+                              --value arn:aws:acm:us-east-1:636045560471:certificate/e7d2db88-cc6a-457e-8c1c-20bd301db9a6 \
+                              --overwrite \
+                              --region us-east-1
+                        """
+                    }
+                }
+            }
+        }
         stage('Destroy 70-ingress-alb') {
             steps {
                 script {
@@ -47,6 +63,19 @@ pipeline {
                                 terraform destroy -auto-approve
                             """
                         }
+                    }
+                }
+            }
+        }
+        stage('Cleanup cert parameter') {
+            steps {
+                script {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                        sh """
+                            aws ssm delete-parameter \
+                              --name /expense/dev/ingress_alb_certificate_arn \
+                              --region us-east-1 || true
+                        """
                     }
                 }
             }
